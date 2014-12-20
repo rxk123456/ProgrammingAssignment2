@@ -1,12 +1,19 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Utility functions to cache the Inverse of a Matrix
+## The inverted matrix is calculated the first time it is needed
+## and the result is reused for any subsequent requests
 
-## Write a short comment describing this function
+## Creates a wrapper around matrix data and creates a placeholder for
+## the inverse of the given matrix. The function creates internal functions:
+## set - to set the value of the initial matrix data
+## get - to get the value of the stored matrix
+## setSolution -  to set the value of the inverted matrix
+## getSolution - to get the value of the inverted matrix
 
 makeCacheMatrix <- function(matrixData = matrix()) {
     solvedMatrix <- NULL
     set <- function(data) {
         matrixData <<- data
+        ## reset any stored solution if the matrix data changes
         solvedMatrix <<- NULL
     }
     get <- function() matrixData
@@ -18,17 +25,21 @@ makeCacheMatrix <- function(matrixData = matrix()) {
 }
 
 
-## Write a short comment describing this function
+## Returns the inverse of the given matrix. It utilizes the functionality
+## of the CacheMatrix created by makeCacheMatrix function
+## the solution is calculated on the first request and cached value is reused
+## for any subsequent requests
 
 cacheSolve <- function(cacheMatrix, ...) {
-        ## Return a matrix that is the inverse of 'x'
-    s <- cacheMatrix$getSolution()
-    if(!is.null(s)) {
+    ## Return a matrix that is the inverse of data stored in cacheMatrix
+    solution <- cacheMatrix$getSolution()
+    if(!is.null(solution)) {
         message("getting cached solution")
-        return(s)
+        return(solution)
     }
+    ## if there was no cached solution calculate it and store for future use
     data <- cacheMatrix$get()
-    s <- solve(data, ...)
-    cacheMatrix$setSolution(s)
-    s
+    solution <- solve(data, ...)
+    cacheMatrix$setSolution(solution)
+    solution
 }
